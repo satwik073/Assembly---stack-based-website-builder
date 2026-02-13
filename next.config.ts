@@ -6,9 +6,7 @@ const nextConfig: NextConfig = {
     reactCompiler: false,
   },
   async redirects() {
-    return [
-      { source: '/favicon.ico', destination: '/favicon.svg', permanent: false },
-    ]
+    return [{ source: '/favicon.ico', destination: '/favicon.svg', permanent: false }]
   },
   images: {
     remotePatterns: [
@@ -19,7 +17,6 @@ const nextConfig: NextConfig = {
       { protocol: 'http', hostname: '127.0.0.1', port: '3000', pathname: '/**' },
       { protocol: 'https', hostname: 'localhost', pathname: '/**' },
       { protocol: 'https', hostname: '*.vercel.app', pathname: '/**' },
-      { protocol: 'https', hostname: 'cdn.sanity.io', pathname: '/**' },
     ],
   },
 }
