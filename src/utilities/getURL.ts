@@ -1,3 +1,4 @@
+import { log } from 'console'
 import canUseDOM from './canUseDOM'
 
 export const getServerSideURL = () => {
@@ -9,6 +10,8 @@ export const getServerSideURL = () => {
       : 'http://localhost:3000')
   )
 }
+
+
 
 export const getClientSideURL = () => {
   if (canUseDOM) {
@@ -23,6 +26,9 @@ export const getClientSideURL = () => {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   }
 
+
+  console.log(process.env.NEXT_PUBLIC_APP_URL)
+  console.log(process.env.NEXT_PUBLIC_SERVER_URL)
   return process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SERVER_URL || ''
 }
 
