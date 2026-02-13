@@ -29,6 +29,11 @@ export function middleware(request: NextRequest) {
     isMainHost = true
   }
 
+  // Treat the current Vercel deployment URL as a main host (e.g. for preview deployments)
+  if (process.env.VERCEL_URL && hostname === process.env.VERCEL_URL) {
+    isMainHost = true
+  }
+
   if (process.env.NEXT_PUBLIC_SERVER_URL) {
     try {
       const parsed = new URL(process.env.NEXT_PUBLIC_SERVER_URL)
