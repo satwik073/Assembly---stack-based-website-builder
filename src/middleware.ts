@@ -12,7 +12,11 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
 
   // Skip if already going to app routes
-  if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/api') || url.pathname.startsWith('/studio')) {
+  if (
+    url.pathname.startsWith('/admin') ||
+    url.pathname.startsWith('/api') ||
+    url.pathname.startsWith('/next')
+  ) {
     requestHeaders.set('x-pathname', url.pathname)
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
