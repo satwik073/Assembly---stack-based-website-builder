@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { PortableText } from '@/components/Sanity/PortableText'
 import { urlFor } from '@/sanity/lib/image'
+import { toPublicMediaPath } from '@/utilities/getMediaUrl'
 
 type SanityHeroProps = {
   hero?: {
