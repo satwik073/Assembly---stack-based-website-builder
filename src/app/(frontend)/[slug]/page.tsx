@@ -56,7 +56,7 @@ export default async function Page({ params: paramsPromise }: Args) {
   })
 
   if (!page && slug === 'home') {
-    page = homeStatic
+    page = homeStatic as any
   }
 
   if (!page) {
@@ -80,10 +80,15 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
   const { slug = 'home' } = await paramsPromise
   const decodedSlug = decodeURIComponent(slug)
 
-  const page = await queryPageBySlug({
+  let page = await queryPageBySlug({
     slug: decodedSlug,
     draft: false,
   })
+
+  if (!page && slug === 'home') {
+    page = homeStatic as any
+  }
+
   return generateMeta({ doc: page })
 }
 
