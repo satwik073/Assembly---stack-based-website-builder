@@ -1,0 +1,284 @@
+/* :root {
+  --font-mono: 'Roboto Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 18px;
+  line-height: 32px;
+
+  background: rgb(0, 0, 0);
+  -webkit-font-smoothing: antialiased;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  font-family: system-ui;
+  font-size: 18px;
+  line-height: 32px;
+
+  margin: 0;
+  color: rgb(1000, 1000, 1000);
+
+  @media (max-width: 1024px) {
+    font-size: 15px;
+    line-height: 24px;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+h1 {
+  margin: 40px 0;
+  font-size: 64px;
+  line-height: 70px;
+  font-weight: bold;
+
+  @media (max-width: 1024px) {
+    margin: 24px 0;
+    font-size: 42px;
+    line-height: 42px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 38px;
+    line-height: 38px;
+  }
+
+  @media (max-width: 400px) {
+    font-size: 32px;
+    line-height: 32px;
+  }
+}
+
+p {
+  margin: 24px 0;
+
+  @media (max-width: 1024px) {
+    margin: calc(var(--base) * 0.75) 0;
+  }
+}
+
+a {
+  color: currentColor;
+
+  &:focus {
+    opacity: 0.8;
+    outline: none;
+  }
+
+  &:active {
+    opacity: 0.7;
+    outline: none;
+  }
+}
+
+svg {
+  vertical-align: middle;
+}
+
+.home-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgb(80, 80, 80);
+}
+.home-nav a {
+  text-decoration: none;
+  opacity: 0.9;
+}
+.home-nav a:hover {
+  opacity: 1;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 45px;
+
+  @media (max-width: 400px) {
+    padding: 24px;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+
+    h1 {
+      text-align: center;
+    }
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 1rem;
+  }
+
+  .links a {
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+  }
+
+  .admin {
+    color: rgb(0, 0, 0);
+    background: rgb(1000, 1000, 1000);
+    border: 1px solid rgb(0, 0, 0);
+  }
+
+  .docs {
+    color: rgb(1000, 1000, 1000);
+    background: rgb(0, 0, 0);
+    border: 1px solid rgb(1000, 1000, 1000);
+  }
+}
+
+.auth-page {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.auth-form input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid rgb(80, 80, 80);
+  border-radius: 4px;
+  background: rgb(20, 20, 20);
+  color: inherit;
+}
+.auth-form button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: rgb(200, 200, 200);
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 4px;
+}
+.auth-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.auth-error {
+  color: rgb(255, 120, 120);
+  margin: 0;
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid rgb(80, 80, 80);
+}
+.dashboard-nav a {
+  text-decoration: none;
+}
+.dashboard-user {
+  margin-left: auto;
+  opacity: 0.8;
+}
+.dashboard-main {
+  flex: 1;
+  padding: 2rem;
+}
+.dashboard-page h1 {
+  margin-top: 0;
+}
+.dashboard-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.btn-primary {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgb(200, 200, 200);
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  border-radius: 4px;
+}
+.btn-secondary {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgb(200, 200, 200);
+  color: inherit;
+  text-decoration: none;
+  border-radius: 4px;
+}
+.sites-list {
+  list-style: none;
+  padding: 0;
+}
+.sites-list li {
+  margin: 0.5rem 0;
+}
+.sites-list a {
+  text-decoration: none;
+}
+.form-hint {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin: 0;
+}
+
+.public-site {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.public-site header h1 {
+  margin-top: 0;
+}
+.public-site main section {
+  margin: 2rem 0;
+}
+.public-site .hero-sub {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+.public-site .cta a {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgb(200, 200, 200);
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  border-radius: 4px;
+} */
