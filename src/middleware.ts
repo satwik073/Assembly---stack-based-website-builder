@@ -21,7 +21,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.next({ request: { headers: requestHeaders } })
   }
 
-  const isMainHost = MAIN_HOSTS.includes(hostname)
+  let isMainHost = MAIN_HOSTS.includes(hostname)
+  if (
+    process.env.VERCEL_PROJECT_PRODUCTION_URL &&
+    hostname === process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ) {
+    isMainHost = true
+  }
+
+  if (process.env.NEXT_PUBLIC_SERVER_URL) {
+    try {
+      const parsed = new URL(process.env.NEXT_PUBLIC_SERVER_URL)
+      if (hostname === parsed.hostname) {
+        isMainHost = true
+      }
+    } catch {
+      // ignore
+    }
+  }
   const parts = hostname.split('.')
 
   let subdomain = ''
