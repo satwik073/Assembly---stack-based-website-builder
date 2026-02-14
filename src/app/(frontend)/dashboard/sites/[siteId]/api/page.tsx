@@ -39,8 +39,20 @@ export default function ApiDashboardPage({ params }: { params: Promise<{ siteId:
   const [response, set_response] = useState<ApiResponse | null>(null)
   const [is_loading, set_is_loading] = useState(false)
   const [data_path, set_data_path] = useState('')
-  const [active_view, set_active_view] = useState<'response' | 'template'>('response')
+
+  const [active_view, set_active_view] = useState<'config' | 'response' | 'template'>('config')
   const [save_status, set_save_status] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  // ...
+
+  // Update onClick handler to stay on current view or specific behavior?
+  // Let's keep it simple: selecting an endpoint stays on 'config' or switches?
+  // User wants to avoid creating new request.
+  // If I load an endpoint with template, maybe switch to template?
+  // Let's stick to 'config' default on selection for now, or 'response' if data exists?
+  // The user complained about "creating new request".
+  // So if I click an endpoint, I want to see the RESULT if available.
+  // I will switch to 'response' if lastResponse exists, or 'config' otherwise.
 
   React.useEffect(() => {
     params.then((p) => {
@@ -280,6 +292,7 @@ export default function ApiDashboardPage({ params }: { params: Promise<{ siteId:
                   set_active_endpoint(ep)
                   set_data_path(ep.dataPath ?? '')
                   if (ep.lastResponse) {
+                    set_active_view('response')
                     set_response({
                       success: true,
                       status: 200,
@@ -289,9 +302,11 @@ export default function ApiDashboardPage({ params }: { params: Promise<{ siteId:
                       elapsed_ms: 0,
                     })
                   } else {
+                    set_active_view('config')
                     set_response(null)
                   }
                 }}
+                style={{ cursor: 'pointer' }}
               >
                 <span
                   className={`api-dashboard__endpoint-method api-dashboard__endpoint-method--${ep.method.toLowerCase()}`}
@@ -302,15 +317,42 @@ export default function ApiDashboardPage({ params }: { params: Promise<{ siteId:
                   <span className="api-dashboard__endpoint-name">{ep.name}</span>
                   <span className="api-dashboard__endpoint-url">{ep.url}</span>
                 </div>
-                <button
-                  className="api-dashboard__endpoint-delete"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    if (ep.id) delete_endpoint(ep.id)
-                  }}
-                >
-                  🗑
-                </button>
+                <div className="api-dashboard__endpoint-actions">
+                  <button
+                    className="api-dashboard__endpoint-action"
+                    title="Open Template Builder"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      set_active_endpoint(ep)
+                      set_data_path(ep.dataPath ?? '')
+                      if (ep.lastResponse) {
+                        set_response({
+                          success: true,
+                          status: 200,
+                          statusText: 'Loaded from history',
+                          headers: {},
+                          data: ep.lastResponse,
+                          elapsed_ms: 0,
+                        })
+                      } else {
+                        set_response(null)
+                      }
+                      set_active_view('template')
+                    }}
+                  >
+                    🎨
+                  </button>
+                  <button
+                    className="api-dashboard__endpoint-action api-dashboard__endpoint-action--delete"
+                    title="Delete Endpoint"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      if (ep.id) delete_endpoint(ep.id)
+                    }}
+                  >
+                    🗑
+                  </button>
+                </div>
               </div>
             ))}
             {endpoints.length === 0 && (
@@ -324,75 +366,180 @@ export default function ApiDashboardPage({ params }: { params: Promise<{ siteId:
         </aside>
 
         <main className="api-dashboard__main">
-          <ApiEndpointForm
-            initial_config={active_endpoint ?? undefined}
-            on_submit={save_endpoint}
-            on_test={execute_request}
-            is_loading={is_loading}
-            key={active_endpoint?.id ?? 'new'}
-          />
-
-          {(response || data_path) && (
-            <div className="api-dashboard__result-area">
-              <div className="api-dashboard__result-tabs">
-                <button
-                  className={`api-dashboard__result-tab ${active_view === 'response' ? 'api-dashboard__result-tab--active' : ''}`}
-                  onClick={() => set_active_view('response')}
+          <div className="api-dashboard__view-tabs">
+            <button
+              className={`api-dashboard__view-tab ${active_view === 'config' ? 'active' : ''}`}
+              onClick={() => set_active_view('config')}
+            >
+              ⚙️ Config
+            </button>
+            <button
+              className={`api-dashboard__view-tab ${active_view === 'response' ? 'active' : ''}`}
+              onClick={() => set_active_view('response')}
+              disabled={!response}
+              style={{ opacity: !response ? 0.5 : 1 }}
+            >
+              📄 Response
+              {response && (
+                <span
+                  className="api-dashboard__result-tab-badge"
+                  style={{
+                    backgroundColor:
+                      response.status >= 200 && response.status < 300
+                        ? 'rgba(34,197,94,0.2)'
+                        : 'rgba(239,68,68,0.2)',
+                    color: response.status >= 200 && response.status < 300 ? '#22c55e' : '#ef4444',
+                    marginLeft: '6px',
+                    fontSize: '10px',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
+                  }}
                 >
-                  📄 Response
-                  {response && (
-                    <span
-                      className="api-dashboard__result-tab-badge"
-                      style={{
-                        backgroundColor:
-                          response.status >= 200 && response.status < 300
-                            ? 'rgba(34,197,94,0.2)'
-                            : 'rgba(239,68,68,0.2)',
-                        color:
-                          response.status >= 200 && response.status < 300 ? '#22c55e' : '#ef4444',
-                      }}
-                    >
-                      {response.status}
-                    </span>
-                  )}
-                </button>
-                <button
-                  className={`api-dashboard__result-tab ${active_view === 'template' ? 'api-dashboard__result-tab--active' : ''}`}
-                  onClick={() => set_active_view('template')}
-                >
-                  🎨 Template Builder
-                  {data_path && (
-                    <span className="api-dashboard__result-tab-badge api-dashboard__result-tab-badge--path">
-                      {data_path}
-                    </span>
-                  )}
-                </button>
-              </div>
+                  {response.status}
+                </span>
+              )}
+            </button>
+            <button
+              className={`api-dashboard__view-tab ${active_view === 'template' ? 'active' : ''}`}
+              onClick={() => set_active_view('template')}
+              disabled={!response?.data}
+              style={{ opacity: !response?.data ? 0.5 : 1 }}
+            >
+              🎨 Template Builder
+            </button>
+          </div>
 
-              <div className="api-dashboard__result-content">
-                {active_view === 'response' && response && (
-                  <ResponseViewer
-                    data={response.data}
-                    status={response.status}
-                    status_text={response.statusText}
-                    elapsed_ms={response.elapsed_ms}
-                    on_path_select={handle_path_select}
-                    selected_path={data_path}
-                  />
-                )}
+          <div style={{ display: active_view === 'config' ? 'block' : 'none' }}>
+            <ApiEndpointForm
+              initial_config={active_endpoint ?? undefined}
+              on_submit={save_endpoint}
+              on_test={(req) => {
+                execute_request(req)
+                // executing request automatically switches tab?
+                // Let's keep user on config or switch to response?
+                // execute_request is async.
+                // We can listen to response change to switch tab?
+                // But execute_request is passed form data.
+                // let's just let user switch manually or handle it in execute_request if possible.
+                // But execute_request sets response.
+                // We can Add useEffect to switch tab when response changes?
+                // No, that might be annoying if loading history.
+                // We'll leave it manual for now.
+              }}
+              is_loading={is_loading}
+              key={active_endpoint?.id ?? 'new'}
+            />
+          </div>
 
-                {active_view === 'template' && (
-                  <TemplateBuilder
-                    response_data={response?.data}
-                    data_path={data_path}
-                    initial_template={active_endpoint?.cardTemplate}
-                    on_template_change={handle_template_change}
-                  />
-                )}
-              </div>
+          {active_view === 'response' && (
+            <div className="api-dashboard__result-content" style={{ marginTop: '20px' }}>
+              {response ? (
+                <ResponseViewer
+                  data={response.data}
+                  status={response.status}
+                  status_text={response.statusText}
+                  elapsed_ms={response.elapsed_ms}
+                  on_path_select={(path) => {
+                    handle_path_select(path)
+                    // Optionally switch to template view automatically?
+                    // set_active_view('template')
+                  }}
+                  selected_path={data_path}
+                />
+              ) : (
+                <div className="api-dashboard__empty-state">
+                  No response data available. Run the request first.
+                </div>
+              )}
+            </div>
+          )}
+
+          {active_view === 'template' && (
+            <div className="api-dashboard__result-content" style={{ marginTop: '20px' }}>
+              {response?.data ? (
+                <TemplateBuilder
+                  response_data={response.data}
+                  data_path={data_path}
+                  initial_template={active_endpoint?.cardTemplate}
+                  on_template_change={handle_template_change}
+                />
+              ) : (
+                <div className="api-dashboard__empty-state">
+                  No data to build template. Run the request first.
+                </div>
+              )}
             </div>
           )}
         </main>
+        <style jsx>{`
+          .api-dashboard__view-tabs {
+            display: flex;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            background: #fff;
+          }
+          .api-dashboard__view-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s;
+          }
+          .api-dashboard__view-tab:hover:not(:disabled) {
+            color: #1e293b;
+            background: #f8fafc;
+          }
+          .api-dashboard__view-tab.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+          }
+          .api-dashboard__view-tab:disabled {
+            cursor: not-allowed;
+          }
+          .api-dashboard__empty-state {
+            padding: 40px;
+            text-align: center;
+            color: #94a3b8;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+          }
+          .api-dashboard__endpoint-actions {
+            display: flex;
+            gap: 4px;
+            margin-left: auto;
+            flex-shrink: 0;
+          }
+          .api-dashboard__endpoint-action {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            width: 28px;
+            height: 28px;
+            transition: all 0.2s;
+          }
+          .api-dashboard__endpoint-action:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+          }
+          .api-dashboard__endpoint-action--delete:hover {
+            background: #fee2e2;
+            color: #ef4444;
+          }
+        `}</style>
       </div>
     </div>
   )

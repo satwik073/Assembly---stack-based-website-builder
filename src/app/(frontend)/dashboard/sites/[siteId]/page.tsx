@@ -45,7 +45,7 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
     notFound()
   }
 
-  const [pagesResult, redirectsResult] = await Promise.all([
+  const [pagesResult, redirectsResult, apiEndpointsResult] = await Promise.all([
     payload.find({
       collection: 'pages',
       where: { site: { equals: siteId } },
@@ -57,6 +57,11 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
       limit: 0,
       pagination: false,
     }),
+    payload.find({
+      collection: 'api-endpoints',
+      where: { site: { equals: siteId } },
+      limit: 100,
+    }),
   ])
 
   const pages = pagesResult.docs
@@ -67,6 +72,7 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
     const page = ref.value as PageType
     return getPageSiteId(page) === siteId
   })
+  const apiEndpoints = apiEndpointsResult.docs
 
   const siteRedirectUrl = `${getSiteOrigin(site.subdomain)}/`
 
@@ -159,6 +165,24 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
           {siteRedirects.map((r) => (
             <li key={r.id}>
               <code>{r.from}</code> → {redirectToLabel(r)}
+            </li>
+          ))}
+        </ul>
+      )}
+      <h2>API Endpoints</h2>
+      {apiEndpoints.length === 0 ? (
+        <p>
+          No API endpoints. Use the{' '}
+          <Link href={`/dashboard/sites/${siteId}/api`}>Integration Hub</Link> to create one.
+        </p>
+      ) : (
+        <ul className="sites-list">
+          {apiEndpoints.map((ep: any) => (
+            <li key={ep.id}>
+              <Link href={`/dashboard/sites/${siteId}/api`}>
+                <span style={{ fontWeight: 600, marginRight: '8px' }}>{ep.method}</span>
+                {ep.name} — <code style={{ fontSize: '0.85em' }}>{ep.url}</code>
+              </Link>
             </li>
           ))}
         </ul>

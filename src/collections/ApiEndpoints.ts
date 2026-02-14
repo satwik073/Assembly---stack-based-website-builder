@@ -203,6 +203,9 @@ export const ApiEndpoints: CollectionConfig = {
       label: 'Card Template',
       admin: {
         description: 'UI template mapping for rendering data items',
+        components: {
+          Field: '@/components/ApiBuilder/TemplateBuilderField',
+        },
       },
     },
   ],
