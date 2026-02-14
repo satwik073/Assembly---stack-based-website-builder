@@ -9,6 +9,8 @@ import { FormBlock } from '@/blocks/Form/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { getBlockStyleClassName } from '@/utilities/blockStyleClassName'
 import type { BlockStyle } from '@/utilities/blockStyleClassName'
+import { ApiDataBlock } from '@/blocks/ApiData/Component'
+import '@/blocks/ApiData/api-data-block.css'
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -16,6 +18,7 @@ const blockComponents = {
   cta: CallToActionBlock,
   formBlock: FormBlock,
   mediaBlock: MediaBlock,
+  apiData: ApiDataBlock,
 }
 
 export const RenderBlocks: React.FC<{
