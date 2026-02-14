@@ -67,7 +67,7 @@ export async function parseCurl(curl_string: string): Promise<ParsedCurl> {
           const request = result.output[0].data
 
           // initial values
-          let method = request.method || 'GET'
+          const method = request.method || 'GET'
           let url = ''
           const headers: Array<{ key: string; value: string }> = []
           let body = ''
@@ -191,7 +191,7 @@ export async function parseCurl(curl_string: string): Promise<ParsedCurl> {
             'content-length',
           ]
 
-          let filteredHeaders = headers.filter((h) => {
+          const filteredHeaders = headers.filter((h) => {
             const lower = h.key.toLowerCase()
             return !noise_prefixes.some((p) => lower.startsWith(p)) && !noise_keys.includes(lower)
           })
