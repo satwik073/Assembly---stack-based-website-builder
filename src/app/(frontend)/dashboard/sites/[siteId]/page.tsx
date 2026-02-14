@@ -11,7 +11,9 @@ import { getSiteOrigin } from '@/utilities/getURL'
 function getPageSiteId(page: PageType): string | null {
   if (!page?.site) return null
   const site = page.site
-  return typeof site === 'object' && site !== null ? String((site as { id?: number }).id) : String(site)
+  return typeof site === 'object' && site !== null
+    ? String((site as { id?: number }).id)
+    : String(site)
 }
 
 function redirectToLabel(redirect: Redirect): string {
@@ -71,7 +73,10 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
   return (
     <div className="dashboard-page">
       <h1>{site.name}</h1>
-      <table className="sites-table" style={{ width: '100%', maxWidth: '40rem', borderCollapse: 'collapse', marginTop: '1rem' }}>
+      <table
+        className="sites-table"
+        style={{ width: '100%', maxWidth: '40rem', borderCollapse: 'collapse', marginTop: '1rem' }}
+      >
         <thead>
           <tr style={{ borderBottom: '2px solid var(--border, #e5e5e5)', textAlign: 'left' }}>
             <th style={{ padding: '0.5rem 0.75rem' }}>Subdomain</th>
@@ -82,7 +87,12 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
           <tr style={{ borderBottom: '1px solid var(--border, #e5e5e5)' }}>
             <td style={{ padding: '0.5rem 0.75rem' }}>{site.subdomain}</td>
             <td style={{ padding: '0.5rem 0.75rem' }}>
-              <a href={siteRedirectUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'underline' }}>
+              <a
+                href={siteRedirectUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ textDecoration: 'underline' }}
+              >
                 {siteRedirectUrl}
               </a>
             </td>
@@ -90,14 +100,38 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
         </tbody>
       </table>
       <div className="dashboard-actions">
-        <Link href="/admin/collections/pages" target="_blank" rel="noopener noreferrer" className="btn-primary">
+        <Link
+          href="/admin/collections/pages"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary"
+        >
           Edit pages
         </Link>
         <Link href="/studio" target="_blank" rel="noopener noreferrer" className="btn-secondary">
           Edit content
         </Link>
-        <Link href="/admin/collections/redirects" target="_blank" rel="noopener noreferrer" className="btn-secondary">
+        <Link
+          href="/admin/collections/redirects"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-secondary"
+        >
           Manage redirects
+        </Link>
+        <Link
+          href={`/dashboard/sites/${siteId}/api`}
+          className="btn-primary"
+          style={{
+            background: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
+            color: '#fff',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            fontWeight: 600,
+          }}
+        >
+          ⚡ API Integration Hub
         </Link>
       </div>
       <h2>Pages</h2>
@@ -116,7 +150,10 @@ export default async function SiteDetailPage({ params }: { params: Promise<{ sit
       </ul>
       <h2>Redirects</h2>
       {siteRedirects.length === 0 ? (
-        <p>No redirects for this site. Add redirects in Control Panel → Redirects (they must point to a page of this site).</p>
+        <p>
+          No redirects for this site. Add redirects in Control Panel → Redirects (they must point to
+          a page of this site).
+        </p>
       ) : (
         <ul className="sites-list">
           {siteRedirects.map((r) => (

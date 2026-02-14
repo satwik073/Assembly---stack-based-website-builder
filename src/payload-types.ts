@@ -73,6 +73,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    'api-endpoints': ApiEndpoint;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -96,6 +97,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    'api-endpoints': ApiEndpointsSelect<false> | ApiEndpointsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -305,7 +307,30 @@ export interface Page {
       | null;
     media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+    | {
+        /**
+         * Select a configured API endpoint to fetch data from
+         */
+        apiEndpoint: number | ApiEndpoint;
+        /**
+         * Optional: override the data path from the endpoint config (e.g. "data.products")
+         */
+        dataPath?: string | null;
+        gridColumns?: ('1' | '2' | '3' | '4') | null;
+        cardStyle?: ('minimal' | 'elevated' | 'bordered' | 'glassmorphic') | null;
+        emptyStateText?: string | null;
+        showLoadMore?: boolean | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'apiData';
+      }
+  )[];
   meta?: {
     title?: string | null;
     /**
@@ -898,6 +923,109 @@ export interface Form {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "api-endpoints".
+ */
+export interface ApiEndpoint {
+  id: number;
+  /**
+   * A friendly name for this API endpoint
+   */
+  name: string;
+  /**
+   * The page this API endpoint is associated with (can be assigned later)
+   */
+  page?: (number | null) | Page;
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /**
+   * Full API endpoint URL (e.g. https://api.example.com/v1/products)
+   */
+  url: string;
+  /**
+   * Custom HTTP headers to send with the request
+   */
+  headers?:
+    | {
+        key: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  authType?: ('none' | 'bearer' | 'api-key' | 'basic') | null;
+  authConfig?: {
+    /**
+     * Bearer token (without "Bearer " prefix)
+     */
+    bearerToken?: string | null;
+    /**
+     * Header name for the API key (e.g. X-API-Key)
+     */
+    apiKeyName?: string | null;
+    /**
+     * API key value
+     */
+    apiKeyValue?: string | null;
+    basicUsername?: string | null;
+    basicPassword?: string | null;
+  };
+  /**
+   * URL query parameters
+   */
+  queryParams?:
+    | {
+        key: string;
+        value: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * JSON body for POST/PUT/PATCH requests
+   */
+  requestBody?: string | null;
+  /**
+   * JSONPath to the iterable data in the response (e.g. "data.products" or "results")
+   */
+  dataPath?: string | null;
+  /**
+   * Auto-detected schema from the last successful response
+   */
+  responseSchema?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Cached last successful API response
+   */
+  lastResponse?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * UI template mapping for rendering data items
+   */
+  cardTemplate?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
@@ -1111,6 +1239,10 @@ export interface PayloadLockedDocument {
         value: number | User;
       } | null)
     | ({
+        relationTo: 'api-endpoints';
+        value: number | ApiEndpoint;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: number | Redirect;
       } | null)
@@ -1260,6 +1392,18 @@ export interface PagesSelect<T extends boolean = true> {
         mediaBlock?: T | MediaBlockSelect<T>;
         archive?: T | ArchiveBlockSelect<T>;
         formBlock?: T | FormBlockSelect<T>;
+        apiData?:
+          | T
+          | {
+              apiEndpoint?: T;
+              dataPath?: T;
+              gridColumns?: T;
+              cardStyle?: T;
+              emptyStateText?: T;
+              showLoadMore?: T;
+              id?: T;
+              blockName?: T;
+            };
       };
   meta?:
     | T
@@ -1558,6 +1702,47 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "api-endpoints_select".
+ */
+export interface ApiEndpointsSelect<T extends boolean = true> {
+  name?: T;
+  page?: T;
+  method?: T;
+  url?: T;
+  headers?:
+    | T
+    | {
+        key?: T;
+        value?: T;
+        id?: T;
+      };
+  authType?: T;
+  authConfig?:
+    | T
+    | {
+        bearerToken?: T;
+        apiKeyName?: T;
+        apiKeyValue?: T;
+        basicUsername?: T;
+        basicPassword?: T;
+      };
+  queryParams?:
+    | T
+    | {
+        key?: T;
+        value?: T;
+        id?: T;
+      };
+  requestBody?: T;
+  dataPath?: T;
+  responseSchema?: T;
+  lastResponse?: T;
+  cardTemplate?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

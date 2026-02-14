@@ -9,6 +9,7 @@ import { Media } from './collections/Media'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Sites } from './collections/Sites'
+import { ApiEndpoints } from './collections/ApiEndpoints'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
@@ -61,7 +62,7 @@ const config = buildConfig({
       connectionString: process.env.DATABASE_URL || '',
     },
   }),
-  collections: [Sites, Pages, Posts, Media, Categories, Users],
+  collections: [Sites, Pages, Posts, Media, Categories, Users, ApiEndpoints],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,
